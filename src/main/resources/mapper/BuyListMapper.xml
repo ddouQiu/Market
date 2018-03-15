@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://
+mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.netease.web.Dao.buylist">
+
+	    <insert id="batchInsert">  
+	          insert into buylist(listbuyerId,listproductId,money,num)  
+	     values  
+	       <foreach collection="list" item="item" index="index" separator=",">  
+	        (#{listbuyerId},#{item.id},#{item.price},#{item.BuyNum})  
+	       </foreach> 
+	    </insert> 
+	    
+	   <select id="SelectAll" parameterType="int" resultMap="AllBuiedProductsMap" resultType="com.netease.web.meta.Buyer">
+		select u.id as buyerId,username,password,c.name as ProductName,picture,c.Id as ProductId,num,date,uc.id as buylistId,uc.money as Money 
+	    from buyer u inner join buylist uc on u.id=uc.listbuyerId inner join product c on c.id = uc.listproductId 
+	    where u.id= #{listbuyerId} 
+	   </select>
+		<resultMap id="AllBuiedProductsMap"
+			type="com.netease.web.meta.Buyer">
+		<constructor>
+		   <idArg column="buyerId" javaType="int" />
+		   <arg column="username" javaType="String" />
+		   <arg column="password" javaType="String" />
+		</constructor>
+			<collection property="products"
+				ofType="com.netease.web.meta.Product">
+				<id property="buylistId" column="buylistId" />
+				<result property="id" column="ProductId" />
+				<result property="name" column="ProductName" />
+				<result property="money" column="Money" />
+				<result property="picture" column="picture" />
+				<result property="num" column="num" />
+				<result property="date" column="date" />
+			</collection>
+		</resultMap>
+	    
+</mapper>
